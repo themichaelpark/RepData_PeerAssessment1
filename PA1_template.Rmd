@@ -1,4 +1,5 @@
 ---
+author: "Michael Park"
 title: "Reproducible Research: Peer Assessment 1"
 output: 
   html_document:
@@ -7,9 +8,11 @@ output:
 
 
 ## Loading and preprocessing the data
-
-
-
+```{r}
+download.file("http://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip", "activity.zip")
+unzip("activity.zip")
+activity <- read.csv("activity.csv", header=TRUE, stringsAsFactors = FALSE)
+```
 ## What is mean total number of steps taken per day?
 
 
