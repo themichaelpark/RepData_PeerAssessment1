@@ -8,6 +8,8 @@ output:
 
 
 ## Loading and preprocessing the data
+First, we need to get the data from the course website. The code below will download the zip file to the working directory, unzip it, and load the unzipped data.
+
 ```{r}
 download.file("http://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip", "activity.zip")
 unzip("activity.zip")
