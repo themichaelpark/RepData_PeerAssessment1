@@ -13,16 +13,19 @@ First, we need to get the data from the course website. The code below will down
 ```{r}
 download.file("http://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip", "activity.zip")
 unzip("activity.zip")
-activity <- read.csv("activity.csv", header=TRUE, stringsAsFactors = FALSE)
+activity <- read.csv("activity.csv", header = TRUE, stringsAsFactors = FALSE)
 ```
 
-At this point, the only transformation necessary for the data is to convert the date values from character to date format.
+For some of the calculations, the ddply function will be necessary.
 ```{r}
-activity[,2]<-as.Date(activity[,2])
+library(plyr)
 ```
+
 ## What is mean total number of steps taken per day?
+Later we will attempt to adjust for the missing values, but for the moment we will compute the daily sums based on the measurements we do have.
 
 ```{r}
+
 dailysum <- ddply(activity, "date", summarise, 
                   perday = sum(steps, na.rm = TRUE))
 hist(dailysum[,2], xlab = "Steps per day", main = "")
@@ -39,7 +42,22 @@ intmean <- ddply(activity, "interval", summarise,
 intmax <- intmean[which.max(intmean[,2]),1]  #return the 5 minute interval which has the maximum average number of steps
 ```
 ## Imputing missing values
+Now to return to the issue of missing values. The simplest method for compensating would be to substitute in the daily average value for any missing value. There are two issues with this strategy. First, the number of steps taken can vary greatly between times of day. Secondly, for any day with no recorded measurements at all, we would be left with the assumption that nobody walked at all on that day. The best balance between accuracy and simplicity of calculation seems to be to use the appropriate five minute interval average as a substitute for any missing values. 
 
+```{r}
+missing <- sum(is.na(activity[,1]))
+nalist <- data.frame()
+nalist <- unlist (lapply (activity, function (x) which (is.na (x))))
+adjusted <- activity
+ddply(adjusted, "interval", summarise,
+                perint = mean(steps, na.rm = TRUE))
+  
+
+
+
+
+
+```
 
 
 ## Are there differences in activity patterns between weekdays and weekends?
