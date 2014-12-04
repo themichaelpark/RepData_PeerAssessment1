@@ -16,9 +16,11 @@ unzip("activity.zip")
 activity <- read.csv("activity.csv", header = TRUE, stringsAsFactors = FALSE)
 ```
 
-For some of the calculations, the ddply function will be necessary.
+For some of the calculations, the ddply function will be necessary. Also in the final steps, we will need the date variables to be in date format, rather than character.
+
 ```{r}
 library(plyr)
+activity[,2]<-as.Date(activity[,2])
 ```
 
 ## What is mean total number of steps taken per day?
@@ -46,18 +48,33 @@ Now to return to the issue of missing values. The simplest method for compensati
 
 ```{r}
 missing <- sum(is.na(activity[,1]))
-nalist <- data.frame()
+missing
 nalist <- unlist (lapply (activity, function (x) which (is.na (x))))
+intlist <- rep(intmean$perint, 61)
 adjusted <- activity
-ddply(adjusted, "interval", summarise,
-                perint = mean(steps, na.rm = TRUE))
-  
-
-
-
-
-
+for (i in 1:length(nalist)){
+  adjusted[nalist[i],1] <- intlist[i]
+}
+adjsum <- ddply(adjusted, "date", summarise, 
+                  perday = sum(steps))
+hist(adjsum[,2], xlab = "Steps per day", main = "")
+adjmean <- mean(adjsum[,2])
+adjmed <- median(adjsum[,2])
+adjmean
+adjmed
 ```
-
+Approximately 13% of the observations were missing. By replacing them with average values instead of treating them as zeros, this moved many of the daily totals, as well as the adjusted mean and median, much closer to the previous median value. 
 
 ## Are there differences in activity patterns between weekdays and weekends?
+```{r}
+
+#adjusted[,4]<- NA #creates 4th column to fill with new variable
+day <- weekdays(adjusted[,2])
+for (i in 1:length(day)){
+  if (day[i] == "Saturday" |day[i] == "Sunday"){
+    day[i] <- "Weekend"
+  } else day[i] <- "Weekday"
+}
+adjusted[,4]<- as.factor(day)
+
+```
