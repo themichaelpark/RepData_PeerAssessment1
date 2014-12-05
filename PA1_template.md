@@ -24,7 +24,7 @@ dailysum <- ddply(activity, "date", summarise, perday = sum(steps, na.rm = TRUE)
 hist(dailysum[,2], xlab = "Steps per day", main = "")
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-2-1.png) 
+![](PA1_template_files/figure-html/daily-1.png) 
 
 ```r
 mean(dailysum[,2])
@@ -50,7 +50,7 @@ plot1 <- ggplot(intmean, aes(interval, perint))+geom_line()
 plot1
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-3-1.png) 
+![](PA1_template_files/figure-html/interval-1.png) 
 
 ```r
 intmean[which.max(intmean[,2]),1]  
@@ -82,7 +82,7 @@ adjsum <- ddply(adjusted, "date", summarise, perday = sum(steps))
 hist(adjsum[,2], xlab = "Steps per day", main = "")
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-4-1.png) 
+![](PA1_template_files/figure-html/imputed-1.png) 
 
 ```r
 mean(adjsum[,2])
@@ -120,4 +120,4 @@ plot2 <- ggplot(adjusted, aes(interval, average))+geom_line()
 plot2 + facet_grid(day~.)
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-5-1.png) 
+![](PA1_template_files/figure-html/weekday/weekend-1.png) 

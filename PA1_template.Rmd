@@ -10,7 +10,7 @@ output:
 ## Loading and preprocessing the data
 First, we need to get the data from the course website. The code below will install the packages we will need for this project, download the zip file to the working directory, unzip it, and load the unzipped data. It will also convert the date variable from character class into Date class.
 
-```{r}
+```{r get and clean data}
 library(plyr)
 library(ggplot2)
 download.file("http://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip", "activity.zip")
@@ -22,7 +22,7 @@ activity[,2]<-as.Date(activity[,2])
 ## What is mean total number of steps taken per day?
 Later we will attempt to adjust for the missing values, but for the moment we will ignore them and compute the daily sums based on the measurements we do have.
 
-```{r}
+```{r daily}
 dailysum <- ddply(activity, "date", summarise, perday = sum(steps, na.rm = TRUE))
 hist(dailysum[,2], xlab = "Steps per day", main = "")
 mean(dailysum[,2])
@@ -30,7 +30,7 @@ median(dailysum[,2])
 ```
 
 ## What is the average daily activity pattern?
-```{r}
+```{r interval}
 intmean <- ddply(activity, "interval", summarise, perint = mean(steps, na.rm = TRUE))  
 plot1 <- ggplot(intmean, aes(interval, perint))+geom_line()
 plot1
@@ -39,7 +39,7 @@ intmean[which.max(intmean[,2]),1]
 ## Imputing missing values
 Now to return to the issue of missing values. The simplest method for compensating would be to substitute in the daily average value for any missing value. There are two issues with this strategy. First, the number of steps taken can vary greatly between times of day. Secondly, for any day with no recorded measurements at all, we would have no value to insert. The best balance between accuracy and simplicity of calculation seems to be to use the corresponding five minute interval average as a substitute for any missing values. 
 
-```{r}
+```{r imputed}
 sum(is.na(activity[,1])) #finds the total number of NA values
 nalist <- unlist (lapply (activity, function (x) which (is.na (x)))) #gets the indices of all of the NA values
 intlist <- rep(intmean$perint, 61) 
@@ -55,7 +55,7 @@ median(adjsum[,2])
 Approximately 13% of the observations were missing. By replacing them with average values instead of treating them as zeros, this moved many of the daily totals, as well as the adjusted mean and median, much closer to the previous median value. The fact that the mean and the median are the same to two decimal places is not particularly surprising, since the data is now much closer to being a normal distribution.
 
 ## Are there differences in activity patterns between weekdays and weekends?
-```{r}
+```{r weekday/weekend}
 day <- weekdays(adjusted[,2])
 for (i in 1:length(day)){
   if (day[i] == "Saturday" |day[i] == "Sunday"){
